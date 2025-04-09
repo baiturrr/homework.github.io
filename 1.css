@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+input {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#question {
+    font-size: 24px;
+    margin: 20px 0;
+    color: #555;
+}
+
+#options button, #registration button, #result button, #scoreResult button, #topScores button {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#options button:hover, #registration button:hover, #result button:hover, #scoreResult button:hover, #topScores button:hover {
+    background: #45a049;
+}
+
+#nextBtn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 16px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#nextBtn:hover {
+    background: #1e87db;
+}
+
+#result, #scoreResult, #topScores {
+    font-size: 20px;
+    color: #333;
+}
+
+#result h2, #scoreResult h2, #topScores h2 {
+    color: #4CAF50;
+}
+
+#topList {
+    list-style: none;
+    padding: 0;
+}
+
+#topList li {
+    margin: 10px 0;
+    font-size: 18px;
+}

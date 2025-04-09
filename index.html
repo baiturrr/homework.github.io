@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест по Python для новичков</title>
+    <link rel="stylesheet" href="1.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Тест по основам Python</h1>
+        
+        <div id="registration" style="display: block;">
+            <input type="text" id="firstName" placeholder="Имя" required>
+            <input type="text" id="lastName" placeholder="Фамилия" required>
+            <button onclick="startQuiz()">Начать тест</button>
+        </div>
+
+        <div id="quiz" style="display: none;">
+            <div id="question"></div>
+            <div id="options"></div>
+            <button id="nextBtn" onclick="nextQuestion()">Следующий вопрос</button>
+        </div>
+
+        <div id="result" style="display: none;">
+            <h2>Тест завершен!</h2>
+            <p>Создал: Суйуналиев Байтур, группа ТОСВТ9-3-24</p>
+            <button onclick="showScore()">Результат</button>
+        </div>
+
+        <div id="scoreResult" style="display: none;">
+            <h2>Ваш результат</h2>
+            <p id="userScore"></p>
+            <button onclick="showTop()">Топы</button>
+        </div>
+
+        <div id="topScores" style="display: none;">
+            <h2>Топ участников</h2>
+            <ul id="topList"></ul>
+            <button onclick="restartQuiz()">Вернуться на главную</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "Что выведет print(2 + 2)?", options: ["4", "22", "Ошибка", "0"], answer: "4" },
+            { question: "Как объявить переменную в Python?", options: ["var x", "x = 5", "let x", "int x"], answer: "x = 5" },
+            { question: "Какой тип данных для текста?", options: ["int", "float", "str", "bool"], answer: "str" },
+            { question: "Что делает оператор if?", options: ["Цикл", "Условие", "Функция", "Исключение"], answer: "Условие" },
+            { question: "Какой символ для комментариев?", options: ["//", "#", "/*", "--"], answer: "#" },
+            { question: "Что выведет len('hello')?", options: ["4", "5", "6", "Ошибка"], answer: "5" },
+            { question: "Какой цикл бесконечный?", options: ["for", "while True", "do while", "range"], answer: "while True" },
+            { question: "Что такое list?", options: ["Список", "Словарь", "Строка", "Число"], answer: "Список" },
+            { question: "Как добавить элемент в список?", options: ["append()", "add()", "push()", "insert()"], answer: "append()" },
+            { question: "Что выведет 3 ** 2?", options: ["6", "9", "5", "Ошибка"], answer: "9" },
+            { question: "Какой тип данных True?", options: ["int", "str", "bool", "float"], answer: "bool" },
+            { question: "Что делает range(5)?", options: ["Список 0-5", "0-4", "1-5", "Ошибка"], answer: "0-4" },
+            { question: "Какой оператор сравнения 'равно'?", options: ["=", "==", "===", "!="], answer: "==" },
+            { question: "Что выведет 'a' + 'b'?", options: ["ab", "a+b", "Ошибка", "2"], answer: "ab" },
+            { question: "Как создать функцию?", options: ["def", "function", "func", "lambda"], answer: "def" },
+            { question: "Что такое dict?", options: ["Список", "Словарь", "Множество", "Кортеж"], answer: "Словарь" },
+            { question: "Какой метод для удаления из списка?", options: ["remove()", "delete()", "pop()", "Оба верны"], answer: "Оба верны" },
+            { question: "Что выведет type(5.0)?", options: ["int", "float", "str", "bool"], answer: "float" },
+            { question: "Какой цикл для перебора?", options: ["for", "while", "do", "each"], answer: "for" },
+            { question: "Что выведет print('Hello'[0])?", options: ["H", "e", "Hello", "Ошибка"], answer: "H" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userName = "";
+        let userIP = "";
+
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                userIP = data.ip;
+                checkIfIPUsed();
+            })
+            .catch(error => console.log("Ошибка получения IP:", error));
+
+        function checkIfIPUsed() {
+            let usedIPs = JSON.parse(localStorage.getItem("usedIPs")) || [];
+            if (usedIPs.includes(userIP)) {
+                alert("Вы уже проходили тест с этого IP!");
+                document.getElementById("registration").style.display = "none";
+                showTop(); 
+            }
+        }
+
+        function startQuiz() {
+            const firstName = document.getElementById("firstName").value.trim();
+            const lastName = document.getElementById("lastName").value.trim();
+            if (firstName && lastName) {
+                userName = `${firstName} ${lastName}`;
+                let usedIPs = JSON.parse(localStorage.getItem("usedIPs")) || [];
+                if (usedIPs.includes(userIP)) {
+                    alert("Вы уже проходили тест с этого IP!");
+                    return;
+                }
+                document.getElementById("registration").style.display = "none";
+                document.getElementById("quiz").style.display = "block";
+                loadQuestion();
+            } else {
+                alert("Пожалуйста, введите имя и фамилию!");
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById("question").innerHTML = q.question;
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+            q.options.forEach((option) => {
+                const btn = document.createElement("button");
+                btn.innerHTML = option;
+                btn.onclick = () => checkAnswer(option);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            if (selected === questions[currentQuestion].answer) {
+                score++;
+            }
+            document.getElementById("nextBtn").style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+                document.getElementById("nextBtn").style.display = "none";
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById("quiz").style.display = "none";
+            document.getElementById("result").style.display = "block";
+        }
+
+        function showScore() {
+            document.getElementById("result").style.display = "none";
+            document.getElementById("scoreResult").style.display = "block";
+            document.getElementById("userScore").innerHTML = `${userName}, ваш результат: ${score} из 20`;
+
+            // Сохранение результата и IP
+            let scores = JSON.parse(localStorage.getItem("quizScores")) || [];
+            scores.push({ name: userName, score: score });
+            localStorage.setItem("quizScores", JSON.stringify(scores));
+
+            let usedIPs = JSON.parse(localStorage.getItem("usedIPs")) || [];
+            usedIPs.push(userIP);
+            localStorage.setItem("usedIPs", JSON.stringify(usedIPs));
+        }
+
+        function showTop() {
+            document.getElementById("scoreResult").style.display = "none";
+            document.getElementById("topScores").style.display = "block";
+
+            let scores = JSON.parse(localStorage.getItem("quizScores")) || [];
+            scores.sort((a, b) => b.score - a.score);
+            const topList = document.getElementById("topList");
+            topList.innerHTML = "";
+            scores.slice(0, 10).forEach((entry, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `${index + 1}. ${entry.name} - ${entry.score}/20`;
+                topList.appendChild(li);
+            });
+        }
+
+        function restartQuiz() {
+            document.getElementById("topScores").style.display = "none";
+            document.getElementById("registration").style.display = "block";
+            document.getElementById("firstName").value = "";
+            document.getElementById("lastName").value = "";
+            checkIfIPUsed(); 
+        }
+
+        document.getElementById("nextBtn").style.display = "none";
+    </script>
+</body>
+</html>
